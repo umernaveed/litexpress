@@ -27,7 +27,7 @@ class DashboardData {
   @JsonKey(name: 'pending_balance', defaultValue: '0')
   final dynamic pendingBalance;
   @JsonKey(name: 'available_balance', defaultValue: 0)
-  final int availableBalance;
+  final num availableBalance;
   @JsonKey(name: 'package_count', defaultValue: 0)
   final int packageCount;
   @JsonKey(name: 'package_weight', defaultValue: 0)
@@ -83,7 +83,46 @@ class DashboardData {
     );
   }
   factory DashboardData.fromJson(Map<String, dynamic> json) {
-    return _$DashboardDataFromJson(json);
+    String stringValue(String key, [String fallback = '']) {
+      final value = json[key];
+      return value == null ? fallback : value.toString();
+    }
+
+    int intValue(String key, [int fallback = 0]) {
+      final value = json[key];
+      if (value is num) return value.toInt();
+      return num.tryParse(value?.toString() ?? '')?.toInt() ?? fallback;
+    }
+
+    num numValue(String key, [num fallback = 0]) {
+      final value = json[key];
+      if (value is num) return value;
+      return num.tryParse(value?.toString() ?? '') ?? fallback;
+    }
+
+    final settingJson = json['setting'];
+
+    return DashboardData(
+      setting: settingJson is Map
+          ? Setting.fromJson(Map<String, dynamic>.from(settingJson))
+          : Setting.defaultValues(),
+      outletId: stringValue('outlet_id', '-1'),
+      outstandingPackage: intValue('outstanding_package'),
+      inTransit: intValue('in_transit'),
+      outstandingInvoice: intValue('outstanding_invoice'),
+      outstandingBalance: stringValue('outstanding_balance'),
+      wherehouse: intValue('wherehouse'),
+      memberPoints: numValue('member_points'),
+      referralCode: stringValue('referral_code'),
+      pendingBalance: json['pending_balance'] ?? 0,
+      availableBalance: numValue('available_balance'),
+      packageCount: intValue('package_count'),
+      packageWeight: json['package_weight'] ?? 0,
+      accountManager: stringValue('account_manager'),
+      managerPhone: stringValue('manager_phone'),
+      packageIds: stringValue('package_ids'),
+      invoiceIds: stringValue('invoice_ids'),
+    );
   }
 
   Map<String, dynamic> toJson() => _$DashboardDataToJson(this);
