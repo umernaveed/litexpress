@@ -38,6 +38,7 @@ migrate_working_dir/
 /android/local.properties
 /android/key.properties
 /android/app/keystore
+/android/*upload-key-backup.zip
 /AuthKey_*.p8
 
 # Symbolication related
