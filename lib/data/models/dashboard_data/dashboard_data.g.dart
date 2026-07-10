@@ -27,6 +27,12 @@ DashboardData _$DashboardDataFromJson(Map<String, dynamic> json) =>
       packageIds: json['package_ids'] as String? ?? '',
       invoiceIds: json['invoice_ids'] as String? ?? '',
       managerPhone: json['manager_phone'] as String? ?? '',
+      recentPackages: (json['recent_packages'] as List<dynamic>?)
+              ?.whereType<Map>()
+              .map((e) => DashboardRecentPackage.fromJson(
+                  Map<String, dynamic>.from(e)))
+              .toList() ??
+          [],
     );
 
 Map<String, dynamic> _$DashboardDataToJson(DashboardData instance) =>
@@ -48,4 +54,27 @@ Map<String, dynamic> _$DashboardDataToJson(DashboardData instance) =>
       'manager_phone': instance.managerPhone,
       'package_ids': instance.packageIds,
       'invoice_ids': instance.invoiceIds,
+      'recent_packages': instance.recentPackages,
+    };
+
+DashboardRecentPackage _$DashboardRecentPackageFromJson(
+        Map<String, dynamic> json) =>
+    DashboardRecentPackage(
+      trackingNo: json['tracking_no'] as String? ?? '',
+      courier: json['courier'] as String? ?? '',
+      merchant: json['merchant'] as String? ?? '',
+      status: (json['status'] as num?)?.toInt() ?? 0,
+      statusName: json['status_name'] as String? ?? '',
+      createdAt: json['created_at'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$DashboardRecentPackageToJson(
+        DashboardRecentPackage instance) =>
+    <String, dynamic>{
+      'tracking_no': instance.trackingNo,
+      'courier': instance.courier,
+      'merchant': instance.merchant,
+      'status': instance.status,
+      'status_name': instance.statusName,
+      'created_at': instance.createdAt,
     };

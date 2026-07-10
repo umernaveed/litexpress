@@ -40,6 +40,8 @@ class DashboardData {
   final String packageIds;
   @JsonKey(name: 'invoice_ids', defaultValue: '')
   final String invoiceIds;
+  @JsonKey(name: 'recent_packages', defaultValue: <DashboardRecentPackage>[])
+  final List<DashboardRecentPackage> recentPackages;
 
   const DashboardData({
     required this.setting,
@@ -59,6 +61,7 @@ class DashboardData {
     required this.packageIds,
     required this.invoiceIds,
     required this.managerPhone,
+    required this.recentPackages,
   });
 
   factory DashboardData.defaultValues() {
@@ -80,6 +83,7 @@ class DashboardData {
       packageIds: '',
       invoiceIds: '',
       managerPhone: '',
+      recentPackages: const [],
     );
   }
   factory DashboardData.fromJson(Map<String, dynamic> json) {
@@ -122,8 +126,64 @@ class DashboardData {
       managerPhone: stringValue('manager_phone'),
       packageIds: stringValue('package_ids'),
       invoiceIds: stringValue('invoice_ids'),
+      recentPackages: (json['recent_packages'] is List)
+          ? (json['recent_packages'] as List)
+              .whereType<Map>()
+              .map((item) =>
+                  DashboardRecentPackage.fromJson(Map<String, dynamic>.from(item)))
+              .toList()
+          : const [],
     );
   }
 
   Map<String, dynamic> toJson() => _$DashboardDataToJson(this);
+}
+
+@JsonSerializable()
+class DashboardRecentPackage {
+  @JsonKey(name: 'tracking_no', defaultValue: '')
+  final String trackingNo;
+  @JsonKey(name: 'courier', defaultValue: '')
+  final String courier;
+  @JsonKey(name: 'merchant', defaultValue: '')
+  final String merchant;
+  @JsonKey(name: 'status', defaultValue: 0)
+  final int status;
+  @JsonKey(name: 'status_name', defaultValue: '')
+  final String statusName;
+  @JsonKey(name: 'created_at', defaultValue: '')
+  final String createdAt;
+
+  const DashboardRecentPackage({
+    required this.trackingNo,
+    required this.courier,
+    required this.merchant,
+    required this.status,
+    required this.statusName,
+    required this.createdAt,
+  });
+
+  factory DashboardRecentPackage.fromJson(Map<String, dynamic> json) {
+    String stringValue(String key, [String fallback = '']) {
+      final value = json[key];
+      return value == null ? fallback : value.toString();
+    }
+
+    int intValue(String key, [int fallback = 0]) {
+      final value = json[key];
+      if (value is num) return value.toInt();
+      return int.tryParse(value?.toString() ?? '') ?? fallback;
+    }
+
+    return DashboardRecentPackage(
+      trackingNo: stringValue('tracking_no'),
+      courier: stringValue('courier'),
+      merchant: stringValue('merchant'),
+      status: intValue('status'),
+      statusName: stringValue('status_name'),
+      createdAt: stringValue('created_at'),
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$DashboardRecentPackageToJson(this);
 }

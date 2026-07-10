@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
 import 'package:we_ship_faas/app/core/routes/app_routes.dart';
 import 'package:we_ship_faas/presentation/base_screen.dart';
 import 'package:we_ship_faas/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
+import 'package:we_ship_faas/presentation/dashboard/views/dashboard.dart';
 
 class BottomNavScreen extends GetView<BottomNavController> {
   const BottomNavScreen({super.key});
@@ -14,11 +13,12 @@ class BottomNavScreen extends GetView<BottomNavController> {
   Widget build(BuildContext context) {
     return BaseScreen(
       value: SystemUiOverlayStyle.dark,
-      showGradients: true,
+      showGradients: false,
       extendBody: true,
       wrapWithAnnotatedRegion: true,
+      backgroundColor: Dashboard.pageBg,
       body: Container(
-        margin: EdgeInsets.only(bottom: 10.h),
+        margin: const EdgeInsets.only(bottom: 92),
         child: Navigator(
           key: Get.nestedKey(controller.bottomNavNestedID),
           onGenerateRoute: (settings) {
@@ -42,125 +42,200 @@ class BottomNavScreen extends GetView<BottomNavController> {
           },
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 12.h,
-        padding: EdgeInsets.only(top: 1.h),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15),
-            topRight: Radius.circular(15),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+          child: Container(
+            height: 86,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF8CA7CA).withOpacity(0.22),
+                  offset: const Offset(0, 4),
+                  blurRadius: 18,
+                ),
+              ],
+              border: Border.all(color: const Color(0xFFF0F3F8)),
+            ),
+            child: Obx(
+              () => Row(
+                children: [
+                  _NavItem(
+                    index: 0,
+                    current: controller.currentIndex.value,
+                    icon: Icons.home_rounded,
+                    label: 'Dashboard',
+                    onTap: controller.onTabChange,
+                  ),
+                  _NavItem(
+                    index: 1,
+                    current: controller.currentIndex.value,
+                    icon: Icons.inventory_2_outlined,
+                    label: 'Packages',
+                    onTap: controller.onTabChange,
+                  ),
+                  _CenterNavItem(
+                    selected: controller.currentIndex.value == 2,
+                    onTap: () => controller.onTabChange(2),
+                  ),
+                  _NavItem(
+                    index: 3,
+                    current: controller.currentIndex.value,
+                    icon: Icons.notifications_none_rounded,
+                    label: 'Notifications',
+                    badge: '3',
+                    onTap: controller.onTabChange,
+                  ),
+                  _NavItem(
+                    index: 4,
+                    current: controller.currentIndex.value,
+                    icon: Icons.person_outline_rounded,
+                    label: 'Account',
+                    onTap: controller.onTabChange,
+                  ),
+                ],
+              ),
+            ),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black38.withOpacity(0.05),
-              spreadRadius: 0,
-              offset: const Offset(1, 0),
-              blurRadius: 5,
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.index,
+    required this.current,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.badge,
+  });
+
+  final int index;
+  final int current;
+  final IconData icon;
+  final String label;
+  final void Function(int) onTap;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = index == current;
+    final color = selected ? Dashboard.blue : Dashboard.darkBlue;
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onTap(index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(icon, color: color, size: 27),
+                if (badge != null)
+                  Positioned(
+                    right: -8,
+                    top: -7,
+                    child: Container(
+                      width: 18,
+                      height: 18,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFF1428),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        badge!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 11,
+                  fontFamily: 'Poppins',
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15),
-            topRight: Radius.circular(15),
-          ),
-          child: Obx(
-            () => BottomNavigationBar(
-              currentIndex: controller.currentIndex.value,
-              onTap: controller.onTabChange,
-              items: [
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_home.svg',
-                      color: const Color(0xFF4791CE),
-                      height: 2.h,
-                    ),
+      ),
+    );
+  }
+}
+
+class _CenterNavItem extends StatelessWidget {
+  const _CenterNavItem({required this.selected, required this.onTap});
+
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, -17),
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF0877FF), Color(0xFF0042D6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_home.svg',
-                      height: 2.h,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Dashboard.blue.withOpacity(0.35),
+                      offset: const Offset(0, 8),
+                      blurRadius: 18,
                     ),
-                  ),
-                  label: 'Dashboard',
+                  ],
                 ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_person.svg',
-                      color: const Color(0xFF4791CE),
-                      height: 2.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_person.svg',
-                      height: 2.h,
-                    ),
-                  ),
-                  label: 'Authorize User',
-                ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_delivery.svg',
-                      color: const Color(0xFF4791CE),
-                      height: 2.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_delivery.svg',
-                      height: 2.h,
-                    ),
-                  ),
-                  label: 'Delivery',
-                ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: Icon(
-                      Icons.newspaper,
-                      size: 2.3.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: Icon(
-                      Icons.newspaper,
-                      size: 2.3.h,
-                    ),
-                  ),
-                  label: 'News',
-                ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_account.svg',
-                      color: const Color(0xFF4791CE),
-                      height: 2.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_account.svg',
-                      height: 2.h,
-                    ),
-                  ),
-                  label: 'Account',
-                ),
-              ],
+                child: const Icon(Icons.add_rounded,
+                    color: Colors.white, size: 37),
+              ),
             ),
-          ),
+            Transform.translate(
+              offset: const Offset(0, -14),
+              child: Text(
+                'New Package',
+                style: TextStyle(
+                  color: selected ? Dashboard.blue : Dashboard.darkBlue,
+                  fontSize: 11,
+                  fontFamily: 'Poppins',
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
