@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Foreign Express</string>
+	<string>Lite Xpress</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Foreign Express</string>
+	<string>Lite Xpress</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -34,13 +34,13 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Foreign Express to upload profile pictures using the camera</string>
+	<string>Allow Lite Xpress to upload profile pictures using the camera</string>
 	<key>NSDocumentFolderUsageDescription</key>
-	<string>Allow Foreign Express to store and upload user invoices in the app's Documents folder for billing and accounting purposes</string>
+	<string>Allow Lite Xpress to store and upload user invoices in the app's Documents folder for billing and accounting purposes</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Foreign Express to record using your phone's microphone</string>
+	<string>Allow Lite Xpress to record using your phone's microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow Foreign Express to upload profile pictures using photo library</string>
+	<string>Allow Lite Xpress to upload profile pictures using photo library</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

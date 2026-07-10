@@ -1,4 +1,4 @@
-package com.foreignexpress.app
+package com.liteexpress.com
 
 import io.flutter.embedding.android.FlutterActivity
 

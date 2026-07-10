@@ -17,9 +17,9 @@ class _VirtualPayPageState extends State<VirtualPayPage> {
   final ValueNotifier<double> _loadingProgress = ValueNotifier<double>(0);
 
   static const String _successUrl =
-      'https://tracking.foreignexpressja.com/payment/success';
+      'https://liteexpressja.com/payment/success';
   static const String _failedUrl =
-      'https://tracking.foreignexpressja.com/payment/failed';
+      'https://liteexpressja.com/payment/failed';
 
   static final _webViewSettings = InAppWebViewSettings(
     transparentBackground: false,

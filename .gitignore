@@ -51,3 +51,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Backend/export artifacts kept out of the Flutter app repo
+/liteexpree_backend/
+/liteexpree_backend.zip
+/lite_liteexpress*.sql
+/android/g.php
