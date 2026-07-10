@@ -81,7 +81,7 @@ class _DashboardHeader extends StatelessWidget {
                 icon: const Icon(Icons.menu_rounded),
                 color: Dashboard.darkBlue,
                 iconSize: 31,
-                onPressed: () {},
+                onPressed: _openDashboardMenu,
               ),
             ),
             const _LiteLogo(),
@@ -123,6 +123,123 @@ class _DashboardHeader extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openDashboardMenu() {
+    Get.dialog(
+      const _DashboardMenuPanel(),
+      barrierColor: Colors.black26,
+      transitionCurve: Curves.easeOutCubic,
+    );
+  }
+}
+
+class _DashboardMenuPanel extends StatelessWidget {
+  const _DashboardMenuPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomNav = Get.find<BottomNavController>();
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Material(
+        color: Colors.transparent,
+        child: SafeArea(
+          child: Container(
+            width: 286,
+            margin: const EdgeInsets.only(left: 12, top: 8, bottom: 8),
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.14),
+                  offset: const Offset(0, 14),
+                  blurRadius: 30,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const _LiteLogo(),
+                const SizedBox(height: 18),
+                _DashboardMenuItem(
+                  icon: Icons.home_rounded,
+                  label: 'Dashboard',
+                  onTap: () => _goToTab(bottomNav, 0),
+                ),
+                _DashboardMenuItem(
+                  icon: Icons.inventory_2_outlined,
+                  label: 'Packages',
+                  onTap: () => _goToTab(bottomNav, 1),
+                ),
+                _DashboardMenuItem(
+                  icon: Icons.add_box_outlined,
+                  label: 'New Package',
+                  onTap: () => _goToTab(bottomNav, 2),
+                ),
+                _DashboardMenuItem(
+                  icon: Icons.notifications_none_rounded,
+                  label: 'Notifications',
+                  onTap: () => _goToTab(bottomNav, 3),
+                ),
+                _DashboardMenuItem(
+                  icon: Icons.person_outline_rounded,
+                  label: 'Account',
+                  onTap: () => _goToTab(bottomNav, 4),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _goToTab(BottomNavController controller, int index) {
+    Get.back<void>();
+    controller.onTabChange(index);
+  }
+}
+
+class _DashboardMenuItem extends StatelessWidget {
+  const _DashboardMenuItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: Dashboard.blue, size: 23),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Dashboard.darkBlue,
+                fontSize: 14,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -172,7 +289,7 @@ class _LiteLogo extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 3),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -211,8 +328,8 @@ class _AccountSummary extends StatelessWidget {
     final balance = _splitBalance(data.outstandingBalance);
 
     return Container(
-      height: 164,
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+      height: 204,
+      padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF075BED), Color(0xFF0032B5)],
@@ -308,13 +425,50 @@ class _AccountSummary extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(Icons.more_vert_rounded,
-                      color: Colors.white, size: 27),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Icon(Icons.more_vert_rounded,
+                          color: Colors.white, size: 27),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(9),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.star_rounded,
+                              color: Color(0xFFFFD21D),
+                              size: 16,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              'Gold Member',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               Container(height: 1, color: Colors.white12),
-              const SizedBox(height: 13),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
@@ -348,34 +502,6 @@ class _AccountSummary extends StatelessWidget {
                 ],
               ),
             ],
-          ),
-          Positioned(
-            right: 10,
-            top: 68,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(9),
-                border: Border.all(color: Colors.white12),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.star_rounded, color: Color(0xFFFFD21D), size: 18),
-                  SizedBox(width: 6),
-                  Text(
-                    'Gold Member',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -445,7 +571,7 @@ class _HeroMetric extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 22,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w800,
                   height: 1,
@@ -469,11 +595,11 @@ class _HeroMetric extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         GestureDetector(
           onTap: onTap,
           child: Container(
-            height: 36,
+            height: 32,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.12),
@@ -491,7 +617,7 @@ class _HeroMetric extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 11,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
                     ),

@@ -18,7 +18,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
       wrapWithAnnotatedRegion: true,
       backgroundColor: Dashboard.pageBg,
       body: Container(
-        margin: const EdgeInsets.only(bottom: 92),
+        margin: const EdgeInsets.only(bottom: 102),
         child: Navigator(
           key: Get.nestedKey(controller.bottomNavNestedID),
           onGenerateRoute: (settings) {
@@ -47,7 +47,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
           child: Container(
-            height: 86,
+            height: 94,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
@@ -62,6 +62,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
             ),
             child: Obx(
               () => Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _NavItem(
                     index: 0,
@@ -164,16 +165,22 @@ class _NavItem extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 7),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 11,
-                  fontFamily: 'Poppins',
-                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 58,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 10.5,
+                    fontFamily: 'Poppins',
+                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                    height: 1.1,
+                  ),
                 ),
               ),
             ),
@@ -200,10 +207,10 @@ class _CenterNavItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Transform.translate(
-              offset: const Offset(0, -17),
+              offset: const Offset(0, -15),
               child: Container(
-                width: 56,
-                height: 56,
+                width: 58,
+                height: 58,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
@@ -224,14 +231,24 @@ class _CenterNavItem extends StatelessWidget {
               ),
             ),
             Transform.translate(
-              offset: const Offset(0, -14),
-              child: Text(
-                'New Package',
-                style: TextStyle(
-                  color: selected ? Dashboard.blue : Dashboard.darkBlue,
-                  fontSize: 11,
-                  fontFamily: 'Poppins',
-                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+              offset: const Offset(0, -12),
+              child: SizedBox(
+                width: 68,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'New Package',
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                      color: selected ? Dashboard.blue : Dashboard.darkBlue,
+                      fontSize: 10.5,
+                      fontFamily: 'Poppins',
+                      fontWeight:
+                          selected ? FontWeight.w800 : FontWeight.w600,
+                      height: 1.1,
+                    ),
+                  ),
                 ),
               ),
             ),
