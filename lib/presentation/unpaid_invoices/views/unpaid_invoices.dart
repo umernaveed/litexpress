@@ -157,10 +157,12 @@ class _UnpaidItem extends StatelessWidget {
         ),
         SizedBox(height: 1.5.h),
         SizedBox(height: 1.3.h),
-        ActionButton(
+        AppButton(
           title: 'Invoice Detail',
           width: context.width,
-          height: 5.h,
+          height: 5,
+          buttonBorderRadius: 8,
+          backgroundColor: const Color(0xFF0A63E8),
           onTap: () {
             final bottomNavNestedID =
                 find<BottomNavController>().bottomNavNestedID;
