@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:sizer/sizer.dart';
 import 'package:we_ship_faas/app/core/get_di.dart';
 import 'package:we_ship_faas/app/core/routes/app_pages.dart';
 import 'package:we_ship_faas/app/extensions/string_ext.dart';
 import 'package:we_ship_faas/data/models/get_all_package/get_all_package.dart';
-import 'package:we_ship_faas/presentation/account/views/account_screen.dart';
 import 'package:we_ship_faas/presentation/auth/views/login_screen.dart';
-import 'package:we_ship_faas/presentation/auth/widgets/auth_app_bar.dart';
-import 'package:we_ship_faas/presentation/auth/widgets/text_field.dart';
 import 'package:we_ship_faas/presentation/base_screen.dart';
 import 'package:we_ship_faas/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
+import 'package:we_ship_faas/presentation/dashboard/views/dashboard.dart';
 import 'package:we_ship_faas/presentation/delivery/controllers/delivery_controller.dart';
+import 'package:we_ship_faas/presentation/widgets/shimmer_widget.dart';
 
 class DeliveryScreen extends GetView<DeliveryController> {
   const DeliveryScreen({super.key});
@@ -23,417 +21,365 @@ class DeliveryScreen extends GetView<DeliveryController> {
     return BaseScreen(
       showGradients: false,
       value: SystemUiOverlayStyle.dark,
-      backgroundColor: const Color(0xFFFAF4F2).withOpacity(0.4),
-      appBar: const AuthCustomAppBar.withSmallAppLogo(backButtonVisible: false),
-      body: Container(
-        width: context.width,
-        margin:
-            EdgeInsets.only(left: 4.5.w, right: 4.5.w, top: 1.h, bottom: 2.h),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(
-            Radius.circular(3),
+      backgroundColor: Dashboard.pageBg,
+      body: Column(
+        children: [
+          const _PageHeader(title: 'Request Delivery'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 8, 18, 14),
+            child: _SearchBar(controller: controller),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x19000000),
-              blurRadius: 4,
-              offset: Offset(0, 3),
-              spreadRadius: 1.8,
-            )
-          ],
-        ),
-        child: Padding(
-          padding:
-              EdgeInsets.only(left: 5.w, right: 5.w, top: 3.h, bottom: 1.4.h),
-          child: Column(
-            children: [
-              const SearchField(),
-              SizedBox(height: 2.h),
-              const AppDivider(),
-              SizedBox(height: 2.h),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => Future.sync(
-                    () => controller.onRefresh(),
-                  ),
-                  child: GetBuilder<DeliveryController>(
-                    id: 'delivery',
-                    builder: (_) {
-                      return PagedListView<int, GetAllPackage>.separated(
-                        pagingController: controller.pagingController,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.zero,
-                        restorationId: '1',
-                        addAutomaticKeepAlives: true,
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        shrinkWrap: true,
-                        builderDelegate: PagedChildBuilderDelegate(
-                          itemBuilder: (context, item, index) {
-                            return _DeliveryItem(
-                              item: item,
-                              onChanged: (e) {
-                                controller.onItemChecked(item);
-                              },
-                            );
-                          },
-                        ),
-                        separatorBuilder: (context, index) => Padding(
-                          padding: EdgeInsets.only(top: 2.h, bottom: 2.h),
-                          child: Column(
-                            children: [
-                              const AppDivider(),
-                              SizedBox(height: 2.h),
-                              const AppDivider(),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SizedBox(height: 2.h),
-              const AppDivider(),
-              const _NoOfPackages(),
-              const AppDivider(),
-              const _TotalAmount(),
-              const AppDivider(),
-              SizedBox(height: 1.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      title: 'Clear',
-                      onTap: () => controller.onClear(),
-                      backgroundColor: Colors.white,
-                      side: BorderSide(
-                        width: 1,
-                        color: Colors.black.withOpacity(0.30000001192092896),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => Future.sync(controller.onRefresh),
+              child: GetBuilder<DeliveryController>(
+                id: 'delivery',
+                builder: (_) {
+                  return PagedListView<int, GetAllPackage>.separated(
+                    pagingController: controller.pagingController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(18, 0, 18, 190),
+                    builderDelegate: PagedChildBuilderDelegate<GetAllPackage>(
+                      itemBuilder: (context, item, index) => _DeliveryCard(
+                        item: item,
+                        onChanged: (_) => controller.onItemChecked(item),
                       ),
-                      textColor: const Color(0xFF7C7C7C),
+                      firstPageProgressIndicatorBuilder: (_) =>
+                          const _ListShimmer(),
+                      noItemsFoundIndicatorBuilder: (_) =>
+                          const _EmptyState('No delivery packages found'),
                     ),
-                  ),
-                  SizedBox(width: 6.2.w),
-                  Expanded(
-                    flex: 2,
-                    child: Obx(
-                      () {
-                        final count = controller.selectedItems.length;
-                        return AppButton(
-                          title: 'Create Request',
-                          onTap: count <= 0
-                              ? null
-                              : () {
-                                  final bottomNavNestedID =
-                                      find<BottomNavController>()
-                                          .bottomNavNestedID;
-                                  Get.toNamed(
-                                    AppPages.managePickupRequest,
-                                    id: bottomNavNestedID,
-                                  );
-                                },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              )
-            ],
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 14),
+                  );
+                },
+              ),
+            ),
           ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
+          child: _DeliverySummary(controller: controller),
         ),
       ),
     );
   }
 }
 
-class _DeliveryItem extends StatelessWidget {
-  const _DeliveryItem({required this.onChanged, required this.item});
-  final void Function(bool?)? onChanged;
-  final GetAllPackage item;
+class _DeliveryCard extends StatelessWidget {
+  const _DeliveryCard({required this.item, required this.onChanged});
 
+  final GetAllPackage item;
+  final ValueChanged<bool?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: _cardDecoration(),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Checkbox(
+                value: item.isToggleOn,
+                activeColor: Dashboard.blue,
+                onChanged: (value) {
+                  item.isToggleOn = value ?? false;
+                  onChanged(value);
+                },
+              ),
+              const SizedBox(width: 4),
+              const _TileIcon(
+                icon: Icons.local_shipping_outlined,
+                iconColor: Dashboard.blue,
+                background: Color(0xFFEAF2FF),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'HAWB: ${item.manifestNo}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Dashboard.darkBlue,
+                    fontSize: 18,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Divider(height: 1, color: Color(0xFFEAF0F8)),
+          const SizedBox(height: 14),
+          _InfoRow('Date', item.createdAt.toDDMMYYYY, Icons.calendar_month_outlined),
+          _InfoRow('Name', item.userName, Icons.person_outline_rounded),
+          _InfoRow('Supplier', item.courier, Icons.storefront_outlined),
+          _InfoRow('Tracking', item.supplierTrackingNo, Icons.confirmation_number_outlined),
+          _InfoRow('Description', item.itemDescription, Icons.description_outlined,
+              maxLines: 2),
+          _InfoRow('Package Amount', _money(item.packageInvoice), Icons.payments_outlined),
+        ],
+      ),
+    );
+  }
+}
+
+class _DeliverySummary extends StatelessWidget {
+  const _DeliverySummary({required this.controller});
+
+  final DeliveryController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: _cardDecoration(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Obx(
+            () => Row(
+              children: [
+                Expanded(child: _SummaryValue('Packages', '${controller.selectedItems.length}')),
+                Container(width: 1, height: 38, color: const Color(0xFFEAF0F8)),
+                Expanded(child: _SummaryValue('Total Amount', _money(controller.totalAmount.value))),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton(
+                  title: 'Clear',
+                  onTap: controller.onClear,
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xFFD8E1EF)),
+                  textColor: Dashboard.darkBlue,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: Obx(() {
+                  final count = controller.selectedItems.length;
+                  return AppButton(
+                    title: 'Create Request',
+                    onTap: count <= 0
+                        ? null
+                        : () {
+                            final id = find<BottomNavController>().bottomNavNestedID;
+                            Get.toNamed(AppPages.managePickupRequest, id: id);
+                          },
+                  );
+                }),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryValue extends StatelessWidget {
+  const _SummaryValue(this.label, this.value);
+  final String label;
+  final String value;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+        Text(label, style: _mutedStyle),
+        const SizedBox(height: 3),
+        Text(value, style: _strongStyle, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ],
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow(this.label, this.value, this.icon, {this.maxLines = 1});
+  final String label;
+  final String? value;
+  final IconData icon;
+  final int maxLines;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          _TileIcon(icon: icon, iconColor: Dashboard.blue, background: const Color(0xFFEAF2FF)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CheckBoxTitle(
-                  subTitle: item.manifestNo,
-                  onChanged: onChanged,
-                  title: 'HAWB:',
-                  item: item,
-                ),
+                Text(label, style: _mutedStyle),
+                const SizedBox(height: 2),
+                Text((value ?? '').isEmpty ? '--' : value!,
+                    maxLines: maxLines, overflow: TextOverflow.ellipsis, style: _strongStyle),
               ],
             ),
-            Expanded(
-              child: _DeliveryItemKeyValueBuilder(
-                subTitle: item.createdAt.toDDMMYYYY,
-                title: 'Date:',
-                mainAxisAlignment: MainAxisAlignment.end,
-                spaceBTW: 1.w,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 1.5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: _DeliveryItemKeyValueBuilder(
-                subTitle: item.userName,
-                title: 'Name:',
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
-              ),
-            ),
-            Expanded(
-              child: _DeliveryItemKeyValueBuilder(
-                subTitle: item.courier,
-                title: 'Supplier:',
-                mainAxisAlignment: MainAxisAlignment.end,
-                spaceBTW: 1.w,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 1.5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: _DeliveryItemKeyValueBuilder(
-                subTitle: item.supplierTrackingNo,
-                title: 'Supplier Tracking: ',
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 1.5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: _DeliveryItemKeyValueBuilder(
-                subTitle: item.itemDescription,
-                title: 'Description:',
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 1.5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: _DeliveryItemKeyValueBuilder(
-                subTitle: item.packageInvoice,
-                title: 'Package Amount:',
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _TotalAmount extends StatelessWidget {
-  const _TotalAmount();
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = find<DeliveryController>();
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Expanded(
-            child: Text(
-              'Total Amount Due',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ),
-          Expanded(
-            child: Obx(
-              () => Text(
-                controller.totalAmount.toString(),
-                style: const TextStyle(
-                  color: Color(0xFF7C7C7C),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          )
         ],
       ),
     );
   }
 }
 
-class _NoOfPackages extends StatelessWidget {
-  const _NoOfPackages();
-
+class _SearchBar extends StatelessWidget {
+  const _SearchBar({required this.controller});
+  final DeliveryController controller;
   @override
   Widget build(BuildContext context) {
-    final controller = find<DeliveryController>();
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Expanded(
-            child: Text(
-              'No. of Packages',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Obx(
-              () => Text(
-                controller.selectedItems.length.toString(),
-                style: const TextStyle(
-                  color: Color(0xFF7C7C7C),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          )
-        ],
+    return Container(
+      height: 72,
+      padding: const EdgeInsets.all(14),
+      decoration: _cardDecoration(),
+      child: TextField(
+        controller: controller.textEditingController,
+        onTapOutside: (_) => FocusScope.of(context).unfocus(),
+        decoration: _searchDecoration('Search delivery packages...'),
       ),
     );
   }
 }
 
-class _DeliveryItemKeyValueBuilder extends StatelessWidget {
+class _PageHeader extends StatelessWidget {
+  const _PageHeader({required this.title});
   final String title;
-  final String? subTitle;
-  final CrossAxisAlignment crossAxisAlignment;
-  final MainAxisAlignment mainAxisAlignment;
-  final double spaceBTW;
-  final MainAxisSize mainAxisSize;
-  final Widget? customSubTitle;
-  const _DeliveryItemKeyValueBuilder({
-    required this.title,
-    this.subTitle,
-    this.crossAxisAlignment = CrossAxisAlignment.start,
-    this.mainAxisAlignment = MainAxisAlignment.center,
-    this.spaceBTW = 0,
-    this.mainAxisSize = MainAxisSize.max,
-    this.customSubTitle,
-  });
-
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: crossAxisAlignment,
-      mainAxisAlignment: mainAxisAlignment,
-      mainAxisSize: mainAxisSize,
-      children: [
-        Text(
-          title,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.start,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w600,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(width: spaceBTW),
-        customSubTitle ??
-            Text(
-              subTitle ?? '',
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 9.sp,
-                fontWeight: FontWeight.w400,
-                overflow: TextOverflow.ellipsis,
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: 96,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 18),
+                child: IconButton(
+                  icon: const Icon(Icons.chevron_left_rounded),
+                  color: Dashboard.darkBlue,
+                  iconSize: 38,
+                  onPressed: () => Get.back<void>(),
+                ),
               ),
-            )
-      ],
+            ),
+            const _LiteLogo(),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class CheckBoxTitle extends StatelessWidget {
-  const CheckBoxTitle({
-    super.key,
-    required this.title,
-    required this.subTitle,
-    required this.onChanged,
-    required this.item,
-  });
-  final String title;
-  final String subTitle;
-  final void Function(bool?)? onChanged;
-  final GetAllPackage item;
-
+class _LiteLogo extends StatelessWidget {
+  const _LiteLogo();
   @override
   Widget build(BuildContext context) {
-    bool? isChecked = item.isToggleOn;
-    return Row(
-      children: [
-        StatefulBuilder(
-          builder: (context, setState) {
-            return SizedBox(
-              height: 2.h,
-              width: 4.w,
-              child: Checkbox(
-                value: isChecked,
-                onChanged: (e) {
-                  item.isToggleOn = e ?? false;
-                  onChanged?.call(e);
-                  setState(() {
-                    isChecked = e;
-                  });
-                },
-                activeColor: Colors.black,
-                tristate: false,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                visualDensity: const VisualDensity(
-                  horizontal: -4,
-                  vertical: -4,
-                ),
-              ),
-            );
-          },
-        ),
-        SizedBox(width: 2.w),
-        _DeliveryItemKeyValueBuilder(
-          title: title,
-          subTitle: subTitle,
-          spaceBTW: 1.w,
-        ),
-      ],
-    );
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
+        const CustomPaint(size: Size(34, 21), painter: _SpeedMarkPainter()),
+        const SizedBox(width: 4),
+        Text.rich(TextSpan(children: [
+          const TextSpan(text: 'Lite ', style: TextStyle(color: Dashboard.darkBlue)),
+          TextSpan(text: 'Xpress', style: TextStyle(color: Dashboard.blue)),
+        ]), style: const TextStyle(fontSize: 24, fontFamily: 'Poppins', fontStyle: FontStyle.italic, fontWeight: FontWeight.w800, height: 0.95)),
+      ]),
+      const SizedBox(height: 6),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        Container(width: 22, height: 1, color: Dashboard.darkBlue),
+        const SizedBox(width: 8),
+        const Text('C O U R I E R  L . T . D', style: TextStyle(color: Dashboard.darkBlue, fontSize: 8, fontFamily: 'Poppins', fontWeight: FontWeight.w600, letterSpacing: 3.2)),
+        const SizedBox(width: 8),
+        Container(width: 22, height: 1, color: Dashboard.darkBlue),
+      ]),
+    ]);
   }
 }
+
+class _TileIcon extends StatelessWidget {
+  const _TileIcon({required this.icon, required this.iconColor, required this.background});
+  final IconData icon;
+  final Color iconColor;
+  final Color background;
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 42,
+        height: 42,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, color: iconColor, size: 27),
+      );
+}
+
+class _SpeedMarkPainter extends CustomPainter {
+  const _SpeedMarkPainter();
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..strokeWidth = 3.2..strokeCap = StrokeCap.round..color = Dashboard.blue;
+    final rows = [[0.00, 0.82], [0.14, 0.92], [0.28, 1.00], [0.42, 0.86]];
+    for (var i = 0; i < rows.length; i++) {
+      final y = size.height * (0.16 + (i * 0.22));
+      canvas.drawLine(Offset(size.width * rows[i][0], y), Offset(size.width * rows[i][1], y), paint);
+    }
+  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ListShimmer extends StatelessWidget {
+  const _ListShimmer();
+  @override
+  Widget build(BuildContext context) => Column(children: [
+        for (var i = 0; i < 3; i++) ...[
+          ShimmerWidget(height: 310, width: double.infinity, radius: BorderRadius.circular(16), child: const SizedBox.shrink()),
+          if (i != 2) const SizedBox(height: 14),
+        ]
+      ]);
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState(this.text);
+  final String text;
+  @override
+  Widget build(BuildContext context) => Center(child: Padding(padding: const EdgeInsets.all(32), child: Text(text, style: _strongStyle)));
+}
+
+InputDecoration _searchDecoration(String hint) => InputDecoration(
+      hintText: hint,
+      prefixIcon: const Icon(Icons.search_rounded, color: Dashboard.blue, size: 29),
+      filled: true,
+      fillColor: const Color(0xFFF8FAFE),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+    );
+
+BoxDecoration _cardDecoration() => BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: const Color(0xFFF0F4FA)),
+      boxShadow: [BoxShadow(color: const Color(0xFF8CA7CA).withOpacity(0.12), offset: const Offset(0, 8), blurRadius: 20)],
+    );
+
+String _money(dynamic value) {
+  final text = value?.toString().trim() ?? '';
+  if (text.isEmpty) return 'JMD 0.00';
+  if (text.toUpperCase().contains('JMD')) return text;
+  return 'JMD $text';
+}
+
+const _mutedStyle = TextStyle(color: Color(0xFF4D566B), fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w500);
+const _strongStyle = TextStyle(color: Dashboard.darkBlue, fontSize: 15, fontFamily: 'Poppins', fontWeight: FontWeight.w800);
