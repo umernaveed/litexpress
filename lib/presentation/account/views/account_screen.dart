@@ -689,7 +689,7 @@ class _ActionTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(15),
       child: Container(
-        minHeight: 82,
+        constraints: const BoxConstraints(minHeight: 82),
         padding: const EdgeInsets.fromLTRB(18, 12, 20, 12),
         decoration: BoxDecoration(
           color: background,
