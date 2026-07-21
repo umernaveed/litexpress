@@ -87,7 +87,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     current: controller.currentIndex.value,
                     icon: Icons.notifications_none_rounded,
                     label: 'Notifications',
-                    badge: '3',
+                    badge: controller.notificationBadge,
                     onTap: controller.onTabChange,
                   ),
                   _NavItem(

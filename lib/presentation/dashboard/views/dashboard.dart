@@ -102,25 +102,30 @@ class _DashboardHeader extends StatelessWidget {
                   Positioned(
                     right: 6,
                     top: 4,
-                    child: Container(
-                      width: 19,
-                      height: 19,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF1428),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Text(
-                        '3',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w800,
-                          height: 1,
+                    child: Obx(() {
+                      final badge = Get.find<BottomNavController>()
+                          .notificationBadge;
+                      if (badge == null) return const SizedBox.shrink();
+                      return Container(
+                        width: 19,
+                        height: 19,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFF1428),
+                          shape: BoxShape.circle,
                         ),
-                      ),
-                    ),
+                        child: Text(
+                          badge,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w800,
+                            height: 1,
+                          ),
+                        ),
+                      );
+                    }),
                   ),
                 ],
               ),

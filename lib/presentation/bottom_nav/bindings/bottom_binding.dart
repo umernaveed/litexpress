@@ -12,7 +12,7 @@ import 'package:we_ship_faas/presentation/purchase/controllers/purchase_controll
 class BottomNavBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(BottomNavController());
+    Get.put(BottomNavController(remoteRepository: find<RemoteRepository>()));
     Get.put(DashboardTabBarController());
     Get.put(
       AuthorizeController(remoteRepository: find<RemoteRepository>()),
