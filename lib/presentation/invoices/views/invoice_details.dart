@@ -34,7 +34,7 @@ class InvoiceDetails extends GetView<InvoiceDetailController> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 22),
+                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 126),
                   child: Column(
                     children: [
                       const _InvoiceHeader(),
@@ -167,8 +167,8 @@ class _InvoiceHero extends StatelessWidget {
     final statusColor = paid ? const Color(0xFF16B86B) : const Color(0xFFFFC52E);
 
     return Container(
-      height: 206,
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+      height: 246,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF075BED), Color(0xFF0032B5)],
@@ -189,7 +189,7 @@ class _InvoiceHero extends StatelessWidget {
           const Positioned.fill(child: CustomPaint(painter: _CardWavePainter())),
           const Positioned(
             right: 2,
-            bottom: 8,
+            bottom: 18,
             child: _InvoiceIllustration(),
           ),
           Column(
@@ -219,7 +219,7 @@ class _InvoiceHero extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 26,
+                  fontSize: 24,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w800,
                   height: 1,
@@ -277,7 +277,7 @@ class _InvoiceHero extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 31,
+                  fontSize: 30,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w800,
                   height: 1,
@@ -360,76 +360,72 @@ class _InfoGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = data.invoiceDetail.isEmpty ? null : data.invoiceDetail.first;
 
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: _Card(
-            minHeight: 172,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    _SectionIcon(
-                      icon: Icons.business_rounded,
-                      color: Dashboard.blue,
-                      background: Colors.transparent,
-                    ),
-                    SizedBox(width: 10),
-                    _SectionTitle('Company Details'),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  data.companyName,
-                  style: const TextStyle(
+        _Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  _SectionIcon(
+                    icon: Icons.business_rounded,
                     color: Dashboard.blue,
-                    fontSize: 15,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w800,
+                    background: Colors.transparent,
                   ),
+                  SizedBox(width: 10),
+                  Expanded(child: _SectionTitle('Company Details')),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                data.companyName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Dashboard.blue,
+                  fontSize: 15,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w800,
                 ),
-                const SizedBox(height: 12),
-                _MutedText(data.localAddress),
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    const Icon(Icons.phone_rounded,
-                        color: Dashboard.blue, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(child: _MutedText(data.phone)),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              _MutedText(data.localAddress),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  const Icon(Icons.phone_rounded,
+                      color: Dashboard.blue, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(child: _MutedText(data.phone)),
+                ],
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _Card(
-            minHeight: 172,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    _SectionIcon(
-                      icon: Icons.inventory_2_outlined,
-                      color: Dashboard.blue,
-                      background: Colors.transparent,
-                    ),
-                    SizedBox(width: 10),
-                    _SectionTitle('Shipment Details'),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _KeyValueRow('HAWB', primary?.manifestNo ?? ''),
-                _KeyValueRow('Weight', '${primary?.packageWeight ?? 0} lbs'),
-                _KeyValueRow('Freight Type', _freightName(data.freightType)),
-                _KeyValueRow('Description', primary?.packageDescription ?? ''),
-              ],
-            ),
+        const SizedBox(height: 14),
+        _Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  _SectionIcon(
+                    icon: Icons.inventory_2_outlined,
+                    color: Dashboard.blue,
+                    background: Colors.transparent,
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(child: _SectionTitle('Shipment Details')),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _KeyValueRow('HAWB', primary?.manifestNo ?? ''),
+              _KeyValueRow('Weight', '${primary?.packageWeight ?? 0} lbs'),
+              _KeyValueRow('Freight Type', _freightName(data.freightType)),
+              _KeyValueRow('Description', primary?.packageDescription ?? ''),
+            ],
           ),
         ),
       ],
@@ -743,23 +739,28 @@ class _KeyValueRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
+          SizedBox(
+            width: 104,
             child: Text(
               label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 13,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w500,
+                height: 1.25,
               ),
             ),
           ),
           const SizedBox(width: 8),
-          Flexible(
+          Expanded(
             child: Text(
               value,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
               style: const TextStyle(
@@ -767,6 +768,7 @@ class _KeyValueRow extends StatelessWidget {
                 fontSize: 13,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w500,
+                height: 1.25,
               ),
             ),
           ),
