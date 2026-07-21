@@ -6,11 +6,10 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:we_ship_faas/app/util/flush_snackbar.dart';
 import 'package:we_ship_faas/presentation/account/controllers/add_alert_controller.dart';
-import 'package:we_ship_faas/presentation/account/views/account_screen.dart';
 import 'package:we_ship_faas/presentation/auth/views/login_screen.dart';
-import 'package:we_ship_faas/presentation/auth/widgets/auth_app_bar.dart';
 import 'package:we_ship_faas/presentation/auth/widgets/text_field.dart';
 import 'package:we_ship_faas/presentation/base_screen.dart';
+import 'package:we_ship_faas/presentation/dashboard/views/dashboard.dart';
 
 class AddPreAlertScreen extends GetView<AddPreAlertController> {
   const AddPreAlertScreen({super.key});
@@ -19,197 +18,364 @@ class AddPreAlertScreen extends GetView<AddPreAlertController> {
   Widget build(BuildContext context) {
     return BaseScreen(
       wrapWithAnnotatedRegion: true,
-      backgroundColor: const Color(0xFFFAF4F2).withOpacity(0.4),
+      backgroundColor: Dashboard.pageBg,
       value: SystemUiOverlayStyle.dark,
-      appBar: const AuthCustomAppBar.withSmallAppLogo(
-        backButtonVisible: true,
-        usingNavigator: true,
-      ),
+      showGradients: false,
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
-        child: Container(
-          width: context.width,
-          margin: EdgeInsets.only(left: 6.w, right: 6.w, top: 1.h, bottom: 2.h),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(
-              Radius.circular(3),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x19000000),
-                blurRadius: 4,
-                offset: Offset(0, 3),
-                spreadRadius: 2,
-              )
-            ],
-          ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 126),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: 3.w, right: 5.w, top: 3.h, bottom: 2.h),
-                child: Text(
-                  'Add Pre-Alert',
-                  style: TextStyle(
-                    color: const Color(0xFF4791CE),
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const AppDivider(),
-              // const AccountHolderInfo(),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-                child: FormBuilder(
-                  key: controller.formKey,
-                  clearValueOnUnregister: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppTextField(
-                        title: 'Name',
-                        hint: 'Name',
-                        name: 'nick_name',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      AppTextField(
-                        title: 'Merchant',
-                        hint: 'Merchant',
-                        name: 'merchant',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      AppTextField(
-                        title: 'Carrier',
-                        hint: 'Carrier',
-                        name: 'courier',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      AppTextField(
-                        title: 'Carrier tracking number',
-                        hint: 'Carrier tracking number',
-                        maxLines: 10,
-                        minLines: 5,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.multiline,
-                        type: FieldType.normal,
-                        name: 'supplier_tracking_no',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      AppTextField(
-                        title: 'Weight',
-                        hint: 'Weight',
-                        maxLines: 10,
-                        minLines: 5,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.multiline,
-                        type: FieldType.normal,
-                        name: 'weight',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      AppTextField(
-                        title: 'Value (US \$)',
-                        hint: 'Value (US \$)',
-                        maxLines: 10,
-                        minLines: 5,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.multiline,
-                        type: FieldType.normal,
-                        name: 'price',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      AppTextField(
-                        title: 'Description',
-                        hint: 'Description',
-                        maxLines: 10,
-                        minLines: 5,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.multiline,
-                        type: FieldType.normal,
-                        name: 'item_description',
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                        ]),
-                      ),
-                      SizedBox(height: 3.h),
-                      Text(
-                        'Attach an invoice',
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 10.6.sp,
-                          fontWeight: FontWeight.w400,
+              const _AddPackageHeader(),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+                decoration: _cardDecoration(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        _TileIcon(
+                          icon: Icons.add_box_outlined,
+                          iconColor: Dashboard.blue,
+                          background: Color(0xFFEAF2FF),
                         ),
-                      ),
-                      SizedBox(height: 2.h),
-                      const FilePickerWidget(),
-                      SizedBox(height: 3.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: AppButton(
-                              title: 'Submit',
-                              onTap: () {
-                                controller.onSubmit().then((value) {
-                                  final isDone = value.isDone;
-                                  final message = value.message;
-                                  if (isDone) {
-                                    Get.back();
-                                    if (message.isEmpty) return;
-                                    FlushSnackbar.showSnackBar(message);
-                                  }
-                                });
-                              },
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            'Add Pre-Alert',
+                            style: TextStyle(
+                              color: Dashboard.darkBlue,
+                              fontSize: 20,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
-                          SizedBox(width: 6.2.w),
-                          Expanded(
-                            child: AppButton(
-                              title: 'Clear',
-                              onTap: () {
-                                controller.clearFile();
-                              },
-                              backgroundColor: Colors.white,
-                              side: BorderSide(
-                                width: 1,
-                                color: Colors.black
-                                    .withOpacity(0.30000001192092896),
-                              ),
-                              textColor: const Color(0xFF7C7C7C),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Create a package alert before your shipment arrives.',
+                      style: TextStyle(
+                        color: Color(0xFF4D566B),
+                        fontSize: 13,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FormBuilder(
+                      key: controller.formKey,
+                      clearValueOnUnregister: true,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppTextField(
+                            title: 'Name',
+                            hint: 'Name',
+                            name: 'nick_name',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 2.2.h),
+                          AppTextField(
+                            title: 'Merchant',
+                            hint: 'Merchant',
+                            name: 'merchant',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 2.2.h),
+                          AppTextField(
+                            title: 'Carrier',
+                            hint: 'Carrier',
+                            name: 'courier',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 2.2.h),
+                          AppTextField(
+                            title: 'Carrier tracking number',
+                            hint: 'Carrier tracking number',
+                            maxLines: 3,
+                            minLines: 2,
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.multiline,
+                            type: FieldType.normal,
+                            name: 'supplier_tracking_no',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 2.2.h),
+                          AppTextField(
+                            title: 'Weight',
+                            hint: 'Weight',
+                            maxLines: 1,
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.number,
+                            type: FieldType.normal,
+                            name: 'weight',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 2.2.h),
+                          AppTextField(
+                            title: 'Value (US \$)',
+                            hint: 'Value (US \$)',
+                            maxLines: 1,
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.number,
+                            type: FieldType.normal,
+                            name: 'price',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          SizedBox(height: 2.2.h),
+                          AppTextField(
+                            title: 'Description',
+                            hint: 'Description',
+                            maxLines: 4,
+                            minLines: 3,
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.multiline,
+                            type: FieldType.normal,
+                            name: 'item_description',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                          const SizedBox(height: 22),
+                          const Text(
+                            'Attach an invoice',
+                            style: TextStyle(
+                              color: Dashboard.darkBlue,
+                              fontSize: 15,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w800,
                             ),
+                          ),
+                          const SizedBox(height: 12),
+                          const FilePickerWidget(),
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppButton(
+                                  title: 'Submit',
+                                  onTap: () {
+                                    controller.onSubmit().then((value) {
+                                      final isDone = value.isDone;
+                                      final message = value.message;
+                                      if (isDone) {
+                                        Get.back();
+                                        if (message.isEmpty) return;
+                                        FlushSnackbar.showSnackBar(message);
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: AppButton(
+                                  title: 'Clear',
+                                  onTap: controller.clearFile,
+                                  backgroundColor: Colors.white,
+                                  side: const BorderSide(
+                                    width: 1,
+                                    color: Color(0xFFD8E1EF),
+                                  ),
+                                  textColor: Dashboard.darkBlue,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+class _AddPackageHeader extends StatelessWidget {
+  const _AddPackageHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: 96,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                icon: const Icon(Icons.chevron_left_rounded),
+                color: Dashboard.darkBlue,
+                iconSize: 38,
+                onPressed: () => Get.back<void>(),
+              ),
+            ),
+            const _LiteLogo(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LiteLogo extends StatelessWidget {
+  const _LiteLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const CustomPaint(
+              size: Size(34, 21),
+              painter: _SpeedMarkPainter(),
+            ),
+            const SizedBox(width: 4),
+            Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(
+                    text: 'Lite ',
+                    style: TextStyle(color: Dashboard.darkBlue),
+                  ),
+                  TextSpan(
+                    text: 'Xpress',
+                    style: TextStyle(color: Dashboard.blue),
+                  ),
+                ],
+              ),
+              style: const TextStyle(
+                fontSize: 24,
+                fontFamily: 'Poppins',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w800,
+                height: 0.95,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 22, height: 1, color: Dashboard.darkBlue),
+            const SizedBox(width: 8),
+            const Text(
+              'C O U R I E R  L . T . D',
+              style: TextStyle(
+                color: Dashboard.darkBlue,
+                fontSize: 8,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                letterSpacing: 3.2,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(width: 22, height: 1, color: Dashboard.darkBlue),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _TileIcon extends StatelessWidget {
+  const _TileIcon({
+    required this.icon,
+    required this.iconColor,
+    required this.background,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 42,
+      height: 42,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, color: iconColor, size: 27),
+    );
+  }
+}
+
+class _SpeedMarkPainter extends CustomPainter {
+  const _SpeedMarkPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..strokeWidth = 3.2
+      ..strokeCap = StrokeCap.round
+      ..color = Dashboard.blue;
+    final rows = [
+      [0.00, 0.82],
+      [0.14, 0.92],
+      [0.28, 1.00],
+      [0.42, 0.86],
+    ];
+
+    for (var i = 0; i < rows.length; i++) {
+      final y = size.height * (0.16 + (i * 0.22));
+      canvas.drawLine(
+        Offset(size.width * rows[i][0], y),
+        Offset(size.width * rows[i][1], y),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+BoxDecoration _cardDecoration() {
+  return BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: const Color(0xFFF0F4FA)),
+    boxShadow: [
+      BoxShadow(
+        color: const Color(0xFF8CA7CA).withOpacity(0.12),
+        offset: const Offset(0, 8),
+        blurRadius: 20,
+      ),
+    ],
+  );
 }
 
 class FilePickerWidget extends StatelessWidget {
@@ -223,97 +389,81 @@ class FilePickerWidget extends StatelessWidget {
       children: [
         Obx(
           () => Container(
-            padding: EdgeInsets.symmetric(vertical: 1.h),
-            width: context.width,
-            decoration: ShapeDecoration(
-              color: const Color(0xFFEFEFEF),
-              shape: RoundedRectangleBorder(
-                side: BorderSide(
-                  width: 1,
-                  color: Colors.black.withOpacity(0.30000001192092896),
-                ),
-                borderRadius: BorderRadius.circular(3),
-              ),
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFE),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFD8E7FF)),
             ),
-            child: controller.pickedFile.value.path.isEmpty
-                ? Padding(
-                    padding: EdgeInsets.only(left: 2.w),
-                    child: Text(
-                      'No file choosen',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 10.5.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                : Padding(
-                    padding: EdgeInsets.only(left: 2.w),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.file_open_rounded),
-                        SizedBox(width: 2.w),
-                        Flexible(
-                          child: Text(
-                            controller.pickedFileName,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 10.5.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
+            child: Row(
+              children: [
+                const _TileIcon(
+                  icon: Icons.upload_file_outlined,
+                  iconColor: Dashboard.blue,
+                  background: Color(0xFFEAF2FF),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    controller.pickedFile.value.path.isEmpty
+                        ? 'No file chosen'
+                        : controller.pickedFileName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Dashboard.darkBlue,
+                      fontSize: 14,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
+                ),
+              ],
+            ),
           ),
         ),
         Obx(
           () => Visibility(
-            visible: !controller.isFilePicked,
-            child: Text(
-              controller.filePickError.value,
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 10.5.sp,
-                fontWeight: FontWeight.w500,
+            visible: !controller.isFilePicked &&
+                controller.filePickError.value.isNotEmpty,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                controller.filePickError.value,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontSize: 12,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
         ),
-        SizedBox(height: 3.w),
+        const SizedBox(height: 12),
         Obx(
           () => Visibility(
             visible: !controller.isFilePicked,
             child: GestureDetector(
-              onTap: () {
-                controller.pickFile();
-              },
+              onTap: controller.pickFile,
               child: Container(
-                width: 131,
-                height: 35,
+                width: double.infinity,
+                height: 48,
                 alignment: Alignment.center,
-                decoration: ShapeDecoration(
-                  color: const Color(0xFFEFEFEF),
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      width: 1,
-                      color: Colors.black.withOpacity(0.30000001192092896),
-                    ),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAF2FF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFD8E7FF)),
                 ),
-                child: Text(
+                child: const Text(
                   'Choose File',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 10.5.sp,
-                    fontWeight: FontWeight.w500,
+                    color: Dashboard.blue,
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
